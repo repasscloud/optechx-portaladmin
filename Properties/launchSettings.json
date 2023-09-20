@@ -11,7 +11,7 @@
     "QuizManager": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://optechx-portaladmin.project77.co",
+      "applicationUrl": "https://optechx-portaladmin.project77.co;http://optechx-portaladmin.project77.co",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
