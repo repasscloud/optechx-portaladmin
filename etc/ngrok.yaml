@@ -1,0 +1,8 @@
+authtoken: 21jTAHrdtFerKslJXoZoF3K3L4M_5GNfvUfAeojYAqbg8HNfU
+version: 2
+tunnels:
+  webhook:
+    addr: portaladmin:80
+    proto: http
+    hostname: definitely-firm-chamois.ngrok-free.app
+

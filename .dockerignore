@@ -1,0 +1,14 @@
+# Ignore files
+start.sh
+Dockerfile
+Dockerfile.caddy
+README.md
+appsettings.Development.json
+
+# Ignore directories
+.vs/
+.vscode/
+obj/
+bin/
+etc/
+

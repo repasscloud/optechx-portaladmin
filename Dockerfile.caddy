@@ -1,0 +1,13 @@
+# Use the official Caddy builder image
+FROM caddy:builder AS builder
+
+# Install xcaddy
+RUN xcaddy build \
+    --with github.com/caddy-dns/digitalocean
+
+# Use the final Caddy image
+FROM caddy:latest
+
+# Copy the custom Caddy binary from the builder stage
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+
