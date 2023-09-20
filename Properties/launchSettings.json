@@ -11,7 +11,7 @@
     "QuizManager": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://definitely-firm-chamois.ngrok-free.app;https://localhost:7290;http://localhost:5168",
+      "applicationUrl": "https://optechx-portaladmin.project77.co",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
