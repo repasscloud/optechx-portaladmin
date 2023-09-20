@@ -1,5 +1,7 @@
 using OptechXPortalAdmin.Data;
 using Auth0.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.CookiePolicy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,14 @@ if (!app.Environment.IsDevelopment())
 
     // Redirect to HTTPS with a specific port (e.g., 5000 for development)
     app.UseHttpsRedirection();
+    
+    // Configure the cookie policy to set SameSite=None and Secure for cookies
+    app.UseCookiePolicy(new CookiePolicyOptions
+    {
+        MinimumSameSitePolicy = SameSiteMode.None, // Allow cross-site cookies
+        HttpOnly = HttpOnlyPolicy.None, // Allow JavaScript access to cookies if needed
+        Secure = CookieSecurePolicy.Always // Require cookies to be sent over HTTPS
+    });
 }
 
 app.UseStaticFiles();
