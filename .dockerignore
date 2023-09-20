@@ -8,6 +8,8 @@ appsettings.Development.json
 # Ignore directories
 .vs/
 .vscode/
+.github/
+.git
 obj/
 bin/
 etc/
