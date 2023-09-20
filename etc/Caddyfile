@@ -1,0 +1,8 @@
+optechx-portaladmin.project77.co {
+    reverse_proxy optechx-portaladmin:80
+    tls internal
+}
+
+www.optechx-portaladmin.project77.co {
+    redir https://optechx-portaladmin.project77.co{uri}
+}
