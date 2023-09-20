@@ -2,6 +2,7 @@ using OptechXPortalAdmin.Data;
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 
-    // Redirect to HTTPS with a specific port (e.g., 5000 for development)
+    // Redirect to HTTPS (default port 443)
     app.UseHttpsRedirection();
     
     // Configure the cookie policy to set SameSite=None and Secure for cookies

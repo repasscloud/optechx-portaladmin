@@ -3,6 +3,3 @@ optechx-portaladmin.project77.co {
     tls internal
 }
 
-www.optechx-portaladmin.project77.co {
-    redir https://optechx-portaladmin.project77.co{uri}
-}
