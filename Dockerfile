@@ -12,7 +12,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
 WORKDIR /app
 COPY --from=build-env-7.0 /app/out .
 # Set the desired port (5000 in this case) 
-ENV ASPNETCORE_URLS=http://+:5000
+# ENV ASPNETCORE_URLS=http://+:5000
 # Expose the port your application is listening on
-EXPOSE 5000
+EXPOSE 80
 ENTRYPOINT ["dotnet", "OptechXPortalAdmin.dll"]
