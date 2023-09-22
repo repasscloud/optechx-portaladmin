@@ -1,5 +1,5 @@
 optechx-portaladmin.project77.co {
     reverse_proxy optechx-portaladmin:80
-    tls internal
+    tls off
 }
 
