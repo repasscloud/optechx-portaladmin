@@ -1,3 +1,4 @@
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env-7.0
 WORKDIR /app
 COPY *.csproj /app
@@ -6,9 +7,12 @@ COPY . .
 RUN dotnet build -c Release   # Build in Release mode
 RUN ASPNETCORE_ENVIRONMENT=Production dotnet publish -c Release -o /app/out  # Set environment to Production during publish
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
 WORKDIR /app
 COPY --from=build-env-7.0 /app/out .
-EXPOSE 80
+# Set the desired port (5000 in this case) 
+ENV ASPNETCORE_URLS=http://+:5000
+# Expose the port your application is listening on
+EXPOSE 5000
 ENTRYPOINT ["dotnet", "OptechXPortalAdmin.dll"]
