@@ -4,6 +4,7 @@ Dockerfile
 Dockerfile.caddy
 README.md
 appsettings.Development.json
+docker-compose.yml
 
 # Ignore directories
 .vs/

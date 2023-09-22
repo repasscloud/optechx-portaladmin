@@ -1,8 +1,5 @@
-using OptechXPortalAdmin.Data;
 using Auth0.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +13,6 @@ builder.Services
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<QuizService>();
 
 var app = builder.Build();
 
