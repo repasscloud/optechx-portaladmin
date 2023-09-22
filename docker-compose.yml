@@ -12,12 +12,14 @@ services:
       - caddy_data:/data
     networks:
       - caddy_net
+    restart: always # Add this line to restart the service always
 
   adminportal:
     image: repasscloud/optechx-portaladmin:latest
     container_name: optechx-portaladmin
     networks:
       - caddy_net
+    restart: always # Add this line to restart the service always
 
 networks:
   caddy_net:
