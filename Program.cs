@@ -3,13 +3,14 @@ using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddAuth0WebAppAuthentication(options => {
-      options.Domain = builder.Configuration["Auth0:Domain"]!;
-      options.ClientId = builder.Configuration["Auth0:ClientId"]!;
+        options.Domain = builder.Configuration["Auth0:Domain"]!;
+        options.ClientId = builder.Configuration["Auth0:ClientId"]!;
     });
 
 // Add services to the container.
@@ -28,6 +29,15 @@ if (!app.Environment.IsDevelopment())
 
     // Redirect to HTTPS (default port 443)
     app.UseHttpsRedirection();
+
+    // Add the following lines to configure HTTPS redirection middleware
+    var forwardingOptions = new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedProto
+    };
+    forwardingOptions.KnownNetworks.Clear();
+    forwardingOptions.KnownProxies.Clear();
+    app.UseForwardedHeaders(forwardingOptions);
     
     // Configure the cookie policy to set SameSite=None and Secure for cookies
     app.UseCookiePolicy(new CookiePolicyOptions
