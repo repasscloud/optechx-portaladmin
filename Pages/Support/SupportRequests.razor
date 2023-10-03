@@ -1,0 +1,515 @@
+﻿@page "/support-requests"
+@attribute [Authorize]
+@inject IJSRuntime JSRuntime
+@inject ISupportTicketService SupportTicketService
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+<!-- Borrowed libraries -->
+@inject ILegendModalService LegendModalService
+
+<h3 class="mb-3">Support Tickets</h3>
+@if (hasSupportRole)
+{
+    @if (tickets.Count == 0)
+    {
+        <span>Loading support tickets...</span>
+    }
+    else
+    {
+        <button class="btn btn-primary mb-3" @onclick="DisplayLegend">Legend</button>
+
+        <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+            <table class="table table-responsive custom-table">
+                <thead>
+                    <tr>
+                        <th style="width: 20px;">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Status</span>&nbsp;
+                            </div>
+                        </th>
+                        <th style="width: 20px;">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Priority</span>&nbsp;
+                            </div>
+                        </th>
+                        <th style="width: 20px;">
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Type</span>&nbsp;
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Opened</span>&nbsp;
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Subject</span>&nbsp;
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Action</span>&nbsp;
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ticket in tickets)
+                    {
+                        <tr>
+                            <td>
+                                <!-- style="display: flex; align-items: center;"-->
+                                @switch (ticket.Status)
+                                {
+                                    case IssueStatus.OPEN:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#3498DB" />
+                                                <image href="/icons/twttrbs/box-arrow-in-down-right.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                    case IssueStatus.ASSIGNED:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#9B59B6" />
+                                                <image href="/icons/twttrbs/person-check.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                    case IssueStatus.PENDING:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#F39C12" />
+                                                <image href="/icons/twttrbs/chat-left-dots.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                    case IssueStatus.CLOSED:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#27AE60" />
+                                                <image href="/icons/twttrbs/door-closed.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                @switch (ticket.Priority)
+                                {
+                                    case IssuePriority.LOW:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#2ECC71" />
+                                                <image href="/icons/twttrbs/thermometer.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                    case IssuePriority.MEDIUM:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#F0C419" />
+                                                <image href="/icons/twttrbs/thermometer-low.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                    case IssuePriority.HIGH:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#FFA500" />
+                                                <image href="/icons/twttrbs/thermometer-half.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                    case IssuePriority.CRITICAL:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#E74C3C" />
+                                                <image href="/icons/twttrbs/thermometer-high.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                @switch (ticket.Type)
+                                {
+                                    case IssueType.SUPPORT:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#3498DB" />
+                                                <image href="/icons/twttrbs/pc-display-horizontal.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                    case IssueType.ACCOUNT:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#E74C3C" />
+                                                <image href="/icons/twttrbs/person-badge.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                    case IssueType.BILLING:
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#F39C12" />
+                                                <image href="/icons/twttrbs/currency-exchange.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                @ticket.Opened.ToString("yyyy-MM-dd")
+                            </td>
+                            <td>
+                                @ticket.Subject
+                            </td>
+                            <td>
+                                @if (ticket.Status != IssueStatus.CLOSED)
+                                {
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="@(async () => await EditTicket(ticket.Id, accountId))">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#87CEEB" />
+                                            <image href="/icons/twttrbs/pencil.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="@(async () => await CloseTicket(ticket.Id))">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#FF6B6B" />
+                                            <image href="/icons/twttrbs/x-square.svg" alt="Close" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                }
+                                else
+                                {
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#27AE60" />
+                                            <image href="/icons/twttrbs/door-closed.svg" alt="Closed Ticket" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#A7C796" />
+                                            <image href="/icons/twttrbs/eye.svg" alt="View" width="24" height="24" x="8" y="8" @onclick="@(async () => await ViewTicket(ticket.Id, accountId))" />
+                                        </g>
+                                    </svg>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-md modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Support Ticket Legend</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <!-- Overview -->
+                        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Ticket Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#3498DB" />
+                                                <image href="/icons/twttrbs/box-arrow-in-down-right.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Request has been received and currently pending action by our Support Team
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#9B59B6" />
+                                                <image href="/icons/twttrbs/person-check.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Request has been received and currently activity by our Support Team is underway
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#F39C12" />
+                                                <image href="/icons/twttrbs/chat-left-dots.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Response provided and waiting customer feedback/update. Auto-close after 3 days of no activity
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#27AE60" />
+                                                <image href="/icons/twttrbs/door-closed.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Ticket has been closed and is now read-only
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Priority Indicator</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#2ECC71" />
+                                                <image href="/icons/twttrbs/thermometer.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Low - tickets with 48 hours SLA
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#F0C419" />
+                                                <image href="/icons/twttrbs/thermometer-low.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Medium - tickets with 24 hours SLA
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#FFA500" />
+                                                <image href="/icons/twttrbs/thermometer-half.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        High - tickets with 8 hours SLA
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#E74C3C" />
+                                                <image href="/icons/twttrbs/thermometer-high.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Critical - tickets with 4 hours SLA
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Categories</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#3498DB" />
+                                                <image href="/icons/twttrbs/pc-display-horizontal.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        General Support - support tickets related to OptechX, functionality, queries
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#E74C3C" />
+                                                <image href="/icons/twttrbs/person-badge.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Account Enquiry - any enquiries related to account details
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#F39C12" />
+                                                <image href="/icons/twttrbs/currency-exchange.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Billing Question - any questions related to billing details
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Actions Available</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#87CEEB" />
+                                                <image href="/icons/twttrbs/pencil.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Edit Ticket - update ticket with additional information
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#FF6B6B" />
+                                                <image href="/icons/twttrbs/x-square.svg" alt="Close" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        Close Ticket - closes the ticket and marks as resolved
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="display: flex; justify-content: flex-start; width: 50px;">
+                                        <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                            <g>
+                                                <circle cx="20" cy="20" r="18" fill="#A7C796" />
+                                                <image href="/icons/twttrbs/eye.svg" alt="View" width="24" height="24" x="8" y="8" />
+                                            </g>
+                                        </svg>
+                                    </td>
+                                    <td class="vertical-align-top">
+                                        View Ticket - view ticket once in read-only mode as a result of being closed
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <span>Missing 'Support' role. Contact administrator to request.</span>
+}
+
+
+
+@code {
+    private string accountId = string.Empty;
+
+    private List<SupportTicket> tickets = new();
+
+    private bool hasSupportRole = false;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            var state = await authenticationState;
+
+            hasSupportRole = state!.User.IsInRole("Support");
+
+            if (hasSupportRole)
+            {
+                // call the task to read the data out of the API for all tickets into a list
+                await SupportTicketService.LoadAllSupportTickets();
+                tickets = SupportTicketService.SupportTickets;
+            }
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private void DisplayLegend()
+    {
+        JSRuntime.InvokeVoidAsync("showModal");
+        LegendModalService.ShowModal();
+    }
+
+    private async Task EditTicket(int TicketId, string AccountId)
+    {
+        int result = await SupportTicketService.FindSupportTicketAsync(ticketId: TicketId, accountId: AccountId);
+        if (result == 0)
+        {
+            NavigationManager.NavigateTo("/support/edit");
+        }
+    }
+
+    private async Task CloseTicket(int TicketId)
+    {
+        await SupportTicketService.CloseSupportTicketAsync(ticketId: TicketId);
+        ToastService.ShowSuccess("Ticket closed");
+        await SupportTicketService.LoadAllSupportTickets();
+        tickets = SupportTicketService.SupportTickets.ToList();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ViewTicket(int TicketId, string AccountId)
+    {
+        int result = await SupportTicketService.FindSupportTicketAsync(ticketId: TicketId, accountId: AccountId);
+        if (result == 0)
+        {
+            NavigationManager.NavigateTo("/support/view");
+        }
+    }
+}
+

@@ -1,6 +1,8 @@
 using Auth0.AspNetCore.Authentication;
+using Blazored.Toast;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.HttpOverrides;
+using OptechXPortalAdmin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,15 @@ builder.Services
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddBlazoredToast();  // toast notifications
+builder.Services.AddScoped<ILegendModalService, LegendModalService>();
+
+// Configure and register HttpClient
+builder.Services.AddHttpClient<ISupportTicketService, SupportTicketService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["OptechX-URLs:BASE-API"]!);
+    client.DefaultRequestHeaders.Add("X-Admin-API-Key", builder.Configuration["X-Admin:Api-Key"]);
+});
 
 var app = builder.Build();
 

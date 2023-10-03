@@ -10,6 +10,7 @@
         </div>
         <div class="col-md-8 mb-3">
             <h4>@Username</h4>
+            <h3>@AuthType</h3>
             <p>
                 Support Access: <span class="@((hasSupportRole.HasValue && hasSupportRole.Value) ? "text-success" : "text-danger")">
                     @((hasSupportRole.HasValue && hasSupportRole.Value) ? "Yes" : "No")
@@ -27,6 +28,8 @@
 
 @code {
     private string Username = "Anonymous User";
+
+    private string AuthType = "";
     private string Picture = "";
 
     private bool? hasBillingRole;

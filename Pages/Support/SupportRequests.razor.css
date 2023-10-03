@@ -1,0 +1,27 @@
+﻿.custom-table {
+    border-collapse: collapse;
+}
+
+    .custom-table td,
+    .custom-table th {
+        border: none;
+    }
+
+    .custom-table thead th {
+        border-bottom: none;
+    }
+
+    .custom-table tbody tr {
+        border-bottom: none;
+    }
+
+/* custom colour for buttons */
+.btn-optechx {
+    background-color: #1c9cbc;
+    color: white;
+}
+
+
+.vertical-align-top {
+    vertical-align: top;
+}
