@@ -45,6 +45,8 @@
 
             Username = state?.User?.Identity?.Name ?? string.Empty;
 
+            AuthType = state?.User?.Identity?.AuthenticationType ?? string.Empty;
+
             Picture = state?.User.Claims
                         .Where(c => c.Type.Equals("picture"))
                         .Select(c => c.Value)
